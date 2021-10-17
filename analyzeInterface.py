@@ -1,5 +1,6 @@
 import baseClass
 import parse
+import re
 
 define = '@interface'
 end = '@end'
@@ -23,13 +24,52 @@ def filterProperty(line):
     return pro
 
 
+def filterParam(line):
+
+    ps = []
+    p = baseClass.Param()
+    buf = ''
+    i = 0
+    name = ''
+    while i < len(line):
+        if line[i] == "(":
+            name += buf.strip(" ")
+            buf = ''
+        elif line[i] == ")":
+            p.type = buf.replace("*", "").strip(" ")
+            print(p.type)
+            buf = ''
+        elif line[i] == " " and len(p.type) > 0:
+            p.name = buf.strip(" ")
+            ps.append(p)
+            p = baseClass.Param()
+            buf = ''
+        else:
+            buf += line[i]
+
+        i += 1
+    return ps, name
+
+
 #解析方法声明
-def filterMethodsDecl(line):
-    if not line.strip(' ').startswith('+') or not line.strip(' ').startswith(
-            '-'):
+def filterMethodDecl(line):
+    if not line.startswith('+') and not line.startswith('-'):
         return None
     method = baseClass.Method()
     method.isStatic = True if line.strip(' ').startswith('+') else False
+    lis = re.findall('(?<=\\()(.+?)(?=\\))', line, 0)
+    if len(lis) == 0:
+        return None
+    method.returnType = lis[0]
+    if ":" not in line:
+        method.name = parse.filterContent(line, ")", ";")
+        return method
+    sp = method.returnType + ")"
+    l = line.split(sp)[1]
+    params, name = filterParam(l)
+    method.params = params
+    method.name = name
+    return method
 
 
 def filterClassName(line):
@@ -68,6 +108,7 @@ def parseInterface(content):
     has = False
     interfaces = []
     inter = baseClass.Interface()
+    append = ''
     for line in content:
         #@interface开头
         if line.startswith(define):
@@ -76,13 +117,23 @@ def parseInterface(content):
             inter.protocols = filterProtocols(line)
             has = True
         #@end 结束
-        if has and line.startswith(end):
+        elif has and line.startswith(end):
             interfaces.append(inter)
             inter = baseClass.Interface()
             has = False
-        if has and line.startswith(prop):
+        elif has and line.startswith(prop):
             p = filterProperty(line)
             if not p is None:
                 inter.propertys.append(p)
+        elif has:
+            append += line
+            if not append.endswith(';'):
+                append += " "
+            if (append.startswith("-")
+                    or append.startswith("+")) and append.endswith(';'):
+                m = filterMethodDecl(append.strip(" "))
+                if not m is None:
+                    inter.methods.append(m)
+                append = ''
 
     return interfaces

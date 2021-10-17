@@ -23,8 +23,19 @@ class Decl():
         return ""
 
 
+class Param(Decl):
+    type = ""
+
+    def __init__(self, name='', type=''):
+        super(Param, self).__init__(name=name)
+        self.type = type
+
+    def desc(self):
+        return "type = {},name = {}".format(self.type, self.name)
+
+
 class Method(Decl):
-    argments = []
+    params = []
     returnType = ''
     isStatic = False
     required = True
@@ -34,16 +45,20 @@ class Method(Decl):
                  propertys=[],
                  methods=[],
                  isStatic=False,
-                 argments=[],
+                 params=[],
                  returnType='',
                  required=True):
         super(Method, self).__init__(name=name,
                                      propertys=propertys,
                                      methods=methods)
         self.isStatic = isStatic
-        self.argments = argments
+        self.params = params
         self.returnType = returnType
         self.required = required
+
+    def desc(self):
+        t = "+" if self.isStatic else "-"
+        return "{}[{}]".format(t, self.name)
 
 
 class Interface(Decl):
@@ -64,11 +79,19 @@ class Interface(Decl):
         self.methods = methods
 
     def desc(self):
-        proDesc = ""
+        proDesc = "["
         for p in self.propertys:
-            proDesc += "[" + p.desc() + "]"
-        return "name = {}\nsuperclass = {}\nprotocols= {} \npropertys = \n{}".format(
-            self.name, self.superclass, str(self.protocols), proDesc)
+            proDesc += p.desc()
+            proDesc += "\n"
+        proDesc += "]\n"
+        methodDesc = ""
+        for m in self.methods:
+            methodDesc += m.desc()
+            methodDesc += "\n"
+
+        return "name = {}\nsuperclass = {}\nprotocols= {} \npropertys = \n{}methods = \n{}".format(
+            self.name, self.superclass, str(self.protocols), proDesc,
+            methodDesc)
 
 
 class Implementation(Decl):
@@ -109,11 +132,18 @@ class Protocol(Decl):
         self.methods = methods
 
     def desc(self):
-        proDesc = ""
+        proDesc = "["
         for p in self.propertys:
-            proDesc += "[" + p.desc() + "]"
-        return "name = {}\nsuperprotocols = {}\npropertys=\n{}".format(
-            self.name, self.superprotocols, proDesc)
+            proDesc += p.desc()
+            proDesc += "\n"
+        proDesc += "]\n"
+        methodDesc = ""
+        for m in self.methods:
+            methodDesc += m.desc()
+            methodDesc += "\n"
+
+        return "name = {}\nsuperprotocols = {}\npropertys = \n{}methods = \n{}".format(
+            self.name, self.superprotocols, proDesc, methodDesc)
 
 
 class File():
@@ -122,4 +152,8 @@ class File():
     protocols = []
     defines = []
     #用类名，协议名，变量映射对应的类，协议，变量，方便查找
-    totoal = {}
+    total = {}
+
+    def mapping(self):
+        for i in self.interfaces + self.protocols + self.implementations + self.defines:
+            self.total[i.name] = i
