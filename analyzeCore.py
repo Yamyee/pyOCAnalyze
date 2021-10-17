@@ -3,7 +3,11 @@ import baseClass
 from analyzeInterface import parseInterface
 from analyzeProtocol import parseProtocol
 from analyzeImplementation import parseImplementation
-files = []
+# files = []
+protocols = {}
+interfaces = {}
+implementations = {}
+classes = {}
 
 
 def runPaths(path):
@@ -33,23 +37,58 @@ def readFile(path):
         print('文件为空：{}'.format(path))
         return
 
-    f = baseClass.File()
-
     inters = parseInterface(contents)
-    print("interface=====")
+
     for i in inters:
-        f.interfaces.append(i)
-        print(i.desc())
+        interfaces[i.name] = i
+        if i.name in implementations.keys():
+            cl = baseClass.OCClass()
+            for p in i.propertys:
+                cl.propertys.append(p)
+            for m in implementations[i.name].methods:
+                cl.methods.append(m)
+            classes[i.name] = cl
+
     protocols = parseProtocol(contents)
-    print("protocol======")
+
     for p in protocols:
-        f.protocols.append(p)
-        print(p.desc())
+        protocols[p.name] = p
+
     if path.endswith('.m'):
-        print("implementation======")
+
         imps = parseImplementation(contents)
         for i in imps:
-            print(i.desc())
+            implementations[i.name] = i
+            if i.name in interfaces.keys():
+                cl = baseClass.OCClass()
+                for p in interfaces[i.name].propertys:
+                    cl.propertys.append(p)
+                for m in i.methods:
+                    cl.methods.append(m)
+                classes[i.name] = cl
+
+
+def compareClass():
+    if len(classes) == 0 or len(protocols) == 0:
+        return
+
+    for cla in classes:
+
+        for i in cla.interfaces:
+            ms = []
+            for p in i.protocols:
+                if p.name not in protocols.keys():
+                    print('protocol {} not found'.format(p.name))
+                    continue
+                else:
+                    ms = p.methods
+
+            if len(ms) == 0:
+                continue
+
+            for m in ms:
+                if m not in cla.methods:
+                    print('class {} undefind')
 
 
 if __name__ == '__main__':
@@ -61,3 +100,5 @@ if __name__ == '__main__':
             runPaths(argv[0])
         else:
             readFile(argv[0])
+
+    # compareClass()

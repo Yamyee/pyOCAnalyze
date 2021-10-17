@@ -124,15 +124,16 @@ def parseInterface(content):
             p = filterProperty(line)
             if not p is None:
                 inter.propertys.append(p)
-        elif has:
-            append += line
-            if not append.endswith(';'):
-                append += " "
-            if (append.startswith("-")
-                    or append.startswith("+")) and append.endswith(';'):
-                m = filterMethodDecl(append.strip(" "))
-                if not m is None:
-                    inter.methods.append(m)
-                append = ''
+        #暂时不解析方法声明
+        # elif has:
+        #     append += line
+        #     if not append.endswith(';'):
+        #         append += " "
+        #     if (append.startswith("-")
+        #             or append.startswith("+")) and append.endswith(';'):
+        #         m = filterMethodDecl(append.strip(" "))
+        #         if not m is None:
+        #             inter.methods.append(m)
+        #         append = ''
 
     return interfaces

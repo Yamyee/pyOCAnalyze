@@ -95,12 +95,6 @@ class Implementation(Decl):
 
 
 class Property(Decl):
-    type = ''
-    name = ''
-    modifiers = []
-    isStatic = False
-    required = True
-
     def __init__(self,
                  type='',
                  modifiers=[],
@@ -111,7 +105,6 @@ class Property(Decl):
         self.type = type
         self.modifiers = modifiers
         self.isStatic = isStatic
-        self.name = name
         self.required = requierd
 
     def desc(self):
@@ -142,19 +135,14 @@ class Protocol(Decl):
 
 
 class OCClass(Decl):
-    interface = Interface()
-    implementation = Implementation()
+    def __ini__(self, name='', prorpertys=[], methods=[], protocols=[]):
+        super(OCClass, self).___init__(name=name)
+        self.propertys = prorpertys
+        self.methods = methods
+        self.protocols = protocols
 
 
 class File():
-    interfaces = []
-    implementations = []
-    protocols = []
-    defines = []
-    imports = []
-    #用类名，协议名，变量映射对应的类，协议，变量，方便查找
-    total = {}
-
     def __init__(self,
                  interfaces=[],
                  implementations=[],
