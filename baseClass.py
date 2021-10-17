@@ -3,17 +3,13 @@ import os
 
 #全局变量
 class Define():
-    protectLevel = 'public'
-    name = ""
-    value = ""
+    def __init__(self, protectLevel='public', name='', value=''):
+        self.protectLevel = protectLevel
+        self.name = name
+        self.value = value
 
 
 class Decl():
-    name = ''
-    file = ''
-    startline = 0
-    endline = 0
-
     def __init__(self, name='', propertys=[], methods=[]):
         self.name = name
         self.propertys = propertys
@@ -24,8 +20,6 @@ class Decl():
 
 
 class Param(Decl):
-    type = ""
-
     def __init__(self, name='', type=''):
         super(Param, self).__init__(name=name)
         self.type = type
@@ -35,11 +29,6 @@ class Param(Decl):
 
 
 class Method(Decl):
-    params = []
-    returnType = ''
-    isStatic = False
-    required = True
-
     def __init__(self,
                  name='',
                  propertys=[],
@@ -62,11 +51,6 @@ class Method(Decl):
 
 
 class Interface(Decl):
-    superclass = ""
-    protocols = []
-    propertys = []
-    methods = []
-
     def __init__(self,
                  name='',
                  superclass='',
@@ -95,10 +79,19 @@ class Interface(Decl):
 
 
 class Implementation(Decl):
-    def __init__(self, name='', propertys=[], methods=[]):
-        super(Implementation, self).__init__(name=name,
-                                             propertys=propertys,
-                                             methods=methods)
+    def __init__(self, name='', methods=[]):
+        super(Implementation, self).__init__(name=name)
+        self.methods = methods
+
+    def __init__(self):
+        self.methods = []
+
+    def desc(self):
+        methodDesc = ""
+        for m in self.methods:
+            methodDesc += m.desc()
+            methodDesc += "\n"
+        return "name = {}\nmethods = \n{}".format(self.name, methodDesc)
 
 
 class Property(Decl):
@@ -108,12 +101,18 @@ class Property(Decl):
     isStatic = False
     required = True
 
-    def __init__(self, type='', modifiers=[], isStatic=False, name=''):
+    def __init__(self,
+                 type='',
+                 modifiers=[],
+                 isStatic=False,
+                 name='',
+                 requierd=True):
         super(Property, self).__init__(name=name)
         self.type = type
         self.modifiers = modifiers
         self.isStatic = isStatic
         self.name = name
+        self.required = requierd
 
     def desc(self):
         return "type = {}\nname = {}\nmodifiers = {}\nisStatic = {}".format(
@@ -121,10 +120,6 @@ class Property(Decl):
 
 
 class Protocol(Decl):
-    superprotocols = []
-    propertys = []
-    methods = []
-
     def __init__(self, name='', propertys=[], methods=[], superpros=[]):
         super(Protocol, self).__init__(name=name)
         self.superprotocols = superpros
@@ -146,13 +141,33 @@ class Protocol(Decl):
             self.name, self.superprotocols, proDesc, methodDesc)
 
 
+class OCClass(Decl):
+    interface = Interface()
+    implementation = Implementation()
+
+
 class File():
     interfaces = []
     implementations = []
     protocols = []
     defines = []
+    imports = []
     #用类名，协议名，变量映射对应的类，协议，变量，方便查找
     total = {}
+
+    def __init__(self,
+                 interfaces=[],
+                 implementations=[],
+                 protocols=[],
+                 defines=[],
+                 imports=[],
+                 total={}):
+        self.interfaces = interfaces
+        self.implementations = implementations
+        self.protocols = protocols
+        self.defines = defines
+        self.imports = imports
+        self.total = total
 
     def mapping(self):
         for i in self.interfaces + self.protocols + self.implementations + self.defines:

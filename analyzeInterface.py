@@ -37,7 +37,6 @@ def filterParam(line):
             buf = ''
         elif line[i] == ")":
             p.type = buf.replace("*", "").strip(" ")
-            print(p.type)
             buf = ''
         elif line[i] == " " and len(p.type) > 0:
             p.name = buf.strip(" ")
@@ -52,7 +51,7 @@ def filterParam(line):
 
 
 #解析方法声明
-def filterMethodDecl(line):
+def filterMethodDecl(line, end=';'):
     if not line.startswith('+') and not line.startswith('-'):
         return None
     method = baseClass.Method()
@@ -62,7 +61,7 @@ def filterMethodDecl(line):
         return None
     method.returnType = lis[0]
     if ":" not in line:
-        method.name = parse.filterContent(line, ")", ";")
+        method.name = parse.filterContent(line, ")", end)
         return method
     sp = method.returnType + ")"
     l = line.split(sp)[1]

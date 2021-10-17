@@ -2,6 +2,7 @@ import os, sys
 import baseClass
 from analyzeInterface import parseInterface
 from analyzeProtocol import parseProtocol
+from analyzeImplementation import parseImplementation
 files = []
 
 
@@ -33,21 +34,22 @@ def readFile(path):
         return
 
     f = baseClass.File()
-    if path.endswith('.h'):
-        inters = parseInterface(contents)
-        for i in inters:
-            f.interfaces.append(i)
-        protocols = parseProtocol(contents)
-        for p in protocols:
-            f.protocols.append(p)
 
+    inters = parseInterface(contents)
     print("interface=====")
-    for inter in f.interfaces:
-        print(inter.desc())
-
+    for i in inters:
+        f.interfaces.append(i)
+        print(i.desc())
+    protocols = parseProtocol(contents)
     print("protocol======")
-    for pro in f.protocols:
-        print(pro.desc())
+    for p in protocols:
+        f.protocols.append(p)
+        print(p.desc())
+    if path.endswith('.m'):
+        print("implementation======")
+        imps = parseImplementation(contents)
+        for i in imps:
+            print(i.desc())
 
 
 if __name__ == '__main__':
