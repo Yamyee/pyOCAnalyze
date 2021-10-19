@@ -49,6 +49,14 @@ def filterParam(line):
         i += 1
     return ps, name
 
+seps = [" ","\n","\t","__attribute__"]
+def filterPureName(line,l,r):
+    name = parse.filterContent(line, l, r)
+    for s in seps:
+        if s in name:
+            name = name.split(s)[0]
+            break
+    return name
 
 #解析方法声明
 def filterMethodDecl(line, end=';'):
@@ -61,7 +69,7 @@ def filterMethodDecl(line, end=';'):
         return None
     method.returnType = lis[0]
     if ":" not in line:
-        method.name = parse.filterContent(line, ")", end)
+        method.name = filterPureName(line,")",end)
         return method
     sp = method.returnType + ")"
     l = line.split(sp)[1]
@@ -117,7 +125,10 @@ def parseInterface(content):
             has = True
         #@end 结束
         elif has and line.startswith(end):
-            inter = baseClass.Interface(name=name,superclass=superclass,propertys=propertys,methods=[],protocols=protocols)
+            inter = baseClass.Interface()
+            inter.name = name
+            inter.superclass = superclass
+            inter.protocols = protocols
             interfaces.append(inter)
             has = False
         elif has and line.startswith(prop):

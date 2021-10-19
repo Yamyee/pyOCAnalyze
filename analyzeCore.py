@@ -41,12 +41,13 @@ def readFile(path):
     for i in inters:
         interfaces[i.name] = i
         if i.name in implementations.keys():
-            cl = baseClass.OCClass(name=i.name,propertys=[],methods=[])
+            cl = baseClass.OCClass()
+            cl.name = i.name
             for p in i.propertys:
                 cl.propertys.append(p)
+            print('interface '+i.name)
             print("protpertys count = "+str(len(i.propertys)))
             print("methods count = "+str(len(implementations[i.name].methods)))
-            time.sleep(2)
             for m in implementations[i.name].methods:
                 cl.methods.append(m)
             classes[i.name] = cl
@@ -63,17 +64,18 @@ def readFile(path):
             implementations[i.name] = i
             if i.name in interfaces.keys():
                 cl = baseClass.OCClass()
+                cl.name = i.name
                 props = interfaces[i.name].propertys
+                print('interface '+i.name)
                 print("protpertys count = "+str(len(props)))
                 print("methods count = "+str(len(i.methods)))
-                time.sleep(2)
                 for p in props:
                     cl.propertys.append(p)
                 for m in i.methods:
                     cl.methods.append(m)
                 classes[i.name] = cl
     print('end... ' + path)
-    
+
 def compareClass():
     if len(classes) == 0 or len(protocols) == 0:
         return

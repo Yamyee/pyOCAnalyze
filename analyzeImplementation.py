@@ -25,7 +25,9 @@ def parseImplementation(contents):
             name=parseImpName(line)
             has = True
         elif has and line.startswith(end):
-            im = baseClass.Implementation(name=parseImpName(line),methods=methods)
+            im = baseClass.Implementation()
+            im.name = name
+            im.methods = methods
             imps.append(im)
             has = False
         elif has:
