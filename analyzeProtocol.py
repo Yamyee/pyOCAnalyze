@@ -23,18 +23,17 @@ def filterSuperProtcols(line):
 def parseProtocol(content):
     has = False
     protocols = []
-    proto = baseClass.Protocol()
     append = ''
     for line in content:
         #@interface开头
         if line.startswith(define):
+            proto = baseClass.Protocol(name='',propertys=[],methods=[],superprotocols=[])
             proto.name = filterProtocolName(line)
             proto.superprotocols = filterSuperProtcols(line)
             has = True
         #@end 结束
         elif has and line.startswith(end):
             protocols.append(proto)
-            proto = baseClass.Protocol()
             has = False
 
         elif has and line.startswith(prop):

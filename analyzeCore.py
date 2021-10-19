@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, time
 import baseClass
 from analyzeInterface import parseInterface
 from analyzeProtocol import parseProtocol
@@ -8,7 +8,6 @@ protocols = {}
 interfaces = {}
 implementations = {}
 classes = {}
-
 
 def runPaths(path):
     for parent, dirList, fileList in os.walk(path):
@@ -36,38 +35,45 @@ def readFile(path):
     if len(contents) == 0:
         print('文件为空：{}'.format(path))
         return
-
+    print('parsing interface...')
     inters = parseInterface(contents)
 
     for i in inters:
         interfaces[i.name] = i
         if i.name in implementations.keys():
-            cl = baseClass.OCClass()
+            cl = baseClass.OCClass(name=i.name,propertys=[],methods=[])
             for p in i.propertys:
                 cl.propertys.append(p)
+            print("protpertys count = "+str(len(i.propertys)))
+            print("methods count = "+str(len(implementations[i.name].methods)))
+            time.sleep(2)
             for m in implementations[i.name].methods:
                 cl.methods.append(m)
             classes[i.name] = cl
+    print('parsing protocol...')
+    pros = parseProtocol(contents)
 
-    protocols = parseProtocol(contents)
-
-    for p in protocols:
+    for p in pros:
         protocols[p.name] = p
 
     if path.endswith('.m'):
-
+        print('parsing implementation...')
         imps = parseImplementation(contents)
         for i in imps:
             implementations[i.name] = i
             if i.name in interfaces.keys():
                 cl = baseClass.OCClass()
-                for p in interfaces[i.name].propertys:
+                props = interfaces[i.name].propertys
+                print("protpertys count = "+str(len(props)))
+                print("methods count = "+str(len(i.methods)))
+                time.sleep(2)
+                for p in props:
                     cl.propertys.append(p)
                 for m in i.methods:
                     cl.methods.append(m)
                 classes[i.name] = cl
-
-
+    print('end... ' + path)
+    
 def compareClass():
     if len(classes) == 0 or len(protocols) == 0:
         return
@@ -90,15 +96,17 @@ def compareClass():
                 if m not in cla.methods:
                     print('class {} undefind')
 
+def analyze(path):
+    if os.path.isdir(path):
+        runPaths(path)
+    else:
+        readFile(path)
 
 if __name__ == '__main__':
     argv = sys.argv[1:]
     if len(argv) == 0:
         print('请输入文件/文件夹路径')
     else:
-        if os.path.isdir(argv[0]):
-            runPaths(argv[0])
-        else:
-            readFile(argv[0])
+        analyze(argv[0])
 
     # compareClass()

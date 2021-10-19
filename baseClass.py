@@ -1,24 +1,16 @@
 import os
 
-
-#全局变量
-class Define():
-    def __init__(self, protectLevel='public', name='', value=''):
-        self.protectLevel = protectLevel
-        self.name = name
-        self.value = value
-
-
 class Decl():
-    def __init__(self, name='', propertys=[], methods=[]):
+    def __init__(self, name=''):
         self.name = name
-        self.propertys = propertys
-        self.methods = methods
-
     def desc(self):
         return ""
 
-
+#全局变量
+class Define(Decl):
+    def __init__(self, name='', value=''):
+        super(Define, self).__init__(name=name)
+        self.value = value
 class Param(Decl):
     def __init__(self, name='', type=''):
         super(Param, self).__init__(name=name)
@@ -27,19 +19,14 @@ class Param(Decl):
     def desc(self):
         return "type = {},name = {}".format(self.type, self.name)
 
-
 class Method(Decl):
     def __init__(self,
                  name='',
-                 propertys=[],
-                 methods=[],
                  isStatic=False,
                  params=[],
                  returnType='',
                  required=True):
-        super(Method, self).__init__(name=name,
-                                     propertys=propertys,
-                                     methods=methods)
+        super(Method, self).__init__(name=name)
         self.isStatic = isStatic
         self.params = params
         self.returnType = returnType
@@ -59,8 +46,9 @@ class Interface(Decl):
                  protocols=[]):
         super(Interface, self).__init__(name=name)
         self.superclass = superclass
-        self.protocols = protocols
+        self.propertys = propertys
         self.methods = methods
+        self.protocols = protocols
 
     def desc(self):
         proDesc = "["
@@ -83,9 +71,6 @@ class Implementation(Decl):
         super(Implementation, self).__init__(name=name)
         self.methods = methods
 
-    def __init__(self):
-        self.methods = []
-
     def desc(self):
         methodDesc = ""
         for m in self.methods:
@@ -96,16 +81,16 @@ class Implementation(Decl):
 
 class Property(Decl):
     def __init__(self,
+                 name='',
                  type='',
                  modifiers=[],
                  isStatic=False,
-                 name='',
-                 requierd=True):
+                 required=True):
         super(Property, self).__init__(name=name)
         self.type = type
         self.modifiers = modifiers
         self.isStatic = isStatic
-        self.required = requierd
+        self.required = required
 
     def desc(self):
         return "type = {}\nname = {}\nmodifiers = {}\nisStatic = {}".format(
@@ -113,9 +98,9 @@ class Property(Decl):
 
 
 class Protocol(Decl):
-    def __init__(self, name='', propertys=[], methods=[], superpros=[]):
+    def __init__(self, name='', propertys=[], methods=[], superprotocols=[]):
         super(Protocol, self).__init__(name=name)
-        self.superprotocols = superpros
+        self.superprotocols = superprotocols
         self.propertys = propertys
         self.methods = methods
 
@@ -135,13 +120,11 @@ class Protocol(Decl):
 
 
 class OCClass(Decl):
-    def __ini__(self, name='', prorpertys=[], methods=[], protocols=[]):
-        super(OCClass, self).___init__(name=name)
-        self.propertys = prorpertys
-        self.methods = methods
+    def __init__(self, name='', protocols=[], propertys=[], methods=[]):
+        super(OCClass, self).__init__(name=name)
         self.protocols = protocols
-
-
+        self.propertys = propertys
+        self.methods = methods
 class File():
     def __init__(self,
                  interfaces=[],

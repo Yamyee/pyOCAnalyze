@@ -1,0 +1,19 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: 当前文件",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yybaseapisdk,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yybaseservice,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yychannelmodules,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yydocumentcomponent-ios,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yyfeedbackcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yygiftviewcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yyiapcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yymediatorsdk,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yyreportcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yywebcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/BDGameTplComponent",
+                "/Users/yamyee/Downloads/diff.txt"
+            ]
+        }
+    ]
+}

@@ -106,24 +106,24 @@ def filterProtocols(line):
 def parseInterface(content):
     has = False
     interfaces = []
-    inter = baseClass.Interface()
+    propertys = []
     append = ''
     for line in content:
         #@interface开头
         if line.startswith(define):
-            inter.name = filterClassName(line)
-            inter.superclass = filterSuperclass(line)
-            inter.protocols = filterProtocols(line)
+            name = filterClassName(line)
+            superclass = filterSuperclass(line)
+            protocols = filterProtocols(line)
             has = True
         #@end 结束
         elif has and line.startswith(end):
+            inter = baseClass.Interface(name=name,superclass=superclass,propertys=propertys,methods=[],protocols=protocols)
             interfaces.append(inter)
-            inter = baseClass.Interface()
             has = False
         elif has and line.startswith(prop):
             p = filterProperty(line)
             if not p is None:
-                inter.propertys.append(p)
+                propertys.append(p)
         #暂时不解析方法声明
         # elif has:
         #     append += line
