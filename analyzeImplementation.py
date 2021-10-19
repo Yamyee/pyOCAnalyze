@@ -36,15 +36,13 @@ def parseImplementation(contents):
             has = False
         elif has:
             if line.startswith('+') or line.startswith('-'):
-                append = ''
-            append += line
-            if not append.endswith('{'):
-                append += " "
-            if (append.startswith("-")
-                    or append.startswith("+")) and append[-1] in methodEnds:
-                m = filterMethodDecl(append.strip(" "), "{")
-                if not m is None:
-                    methods.append(m)
-                append = ''
-
+                append = line
+            elif (append.startswith('-') or append.startswith('+')) and len(line) > 0 :
+                if line[0] in methodEnds:
+                    met = filterMethodDecl(append.strip(" "), "{")
+                    if not met is None:
+                        methods.append(met)
+                    append = ''             
+                else:
+                    append += line
     return imps

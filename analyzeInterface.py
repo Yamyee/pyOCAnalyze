@@ -20,6 +20,7 @@ def filterPropertyTypeName(line):
             buf += line[i]
             type = buf
             name = parse.filterContent(type,"^",")")
+            type = type.replace(name,"")
             break
         elif line[i] == '*' and '^' not in buf:
             type += line[i]
@@ -36,7 +37,6 @@ def filterPropertyTypeName(line):
     return type,name
 
 allModifier = ['strong','weak','assing','class','unsafe_unretained','retain','copy','nonatomic','readwrite','readonly','writeonly','null_resettable']
-
 def filterModifiers(line):
     i = 0
     res = []
@@ -226,6 +226,7 @@ def parseInterface(content):
             inter.name = name
             inter.superclass = superclass
             inter.protocols = protocols
+            inter.propertys = propertys
             interfaces.append(inter)
             propertys = []
             has = False

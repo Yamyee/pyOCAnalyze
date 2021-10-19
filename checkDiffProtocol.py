@@ -65,9 +65,11 @@ def output(path):
 
 def collectMethods(path):
     print('收集方法...')
-    content = "================\n"
+    
     for cla in classes.values():
-        
+        if len(cla.methods) + len(cla.propertys) == 0:
+            continue
+        content = "================{}================\n".format(cla.name)
         for method in cla.methods:
             sym = "+" if method.isStatic else "-"
             mth = "{}[{} {}]".format(sym,cla.name,method.name)
@@ -77,7 +79,8 @@ def collectMethods(path):
             prop = "{}.{}".format(cla.name,property.name)
             print(prop)
             content += prop + "\n"
-        content += "================\n"
+        content += "======================================\n"
+
     if len(content) == 0:
         return
     with open(path,'w+') as f:
