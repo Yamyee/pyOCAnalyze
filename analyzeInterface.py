@@ -138,6 +138,7 @@ def parseInterface(content):
             inter.superclass = superclass
             inter.protocols = protocols
             interfaces.append(inter)
+            propertys = []
             has = False
         elif has and line.startswith(prop):
             p = filterProperty(line)

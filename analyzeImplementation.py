@@ -32,6 +32,7 @@ def parseImplementation(contents):
             im.name = name
             im.methods = methods
             imps.append(im)
+            methods = []
             has = False
         elif has:
             if line.startswith('+') or line.startswith('-'):
