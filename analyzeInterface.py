@@ -103,6 +103,11 @@ def filterSuperclass(line):
         supercls = supercls.split("<")[0].strip(" ")
     return supercls
 
+def filterCategory(line):
+    lis = re.findall('(?<=\\()(.+?)(?=\\))', line, 0)
+    if len(lis)==0:
+        return ''
+    return lis[0]
 
 def filterProtocols(line):
     if "<" in line:
@@ -122,6 +127,9 @@ def parseInterface(content):
             name = filterClassName(line)
             superclass = filterSuperclass(line)
             protocols = filterProtocols(line)
+            cat = filterCategory(line)
+            if len(cat)>0:
+                name += "({})".format(cat)
             has = True
         #@end 结束
         elif has and line.startswith(end):

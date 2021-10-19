@@ -1,6 +1,6 @@
 import baseClass
 import parse
-from analyzeInterface import filterMethodDecl
+from analyzeInterface import filterMethodDecl,filterCategory
 
 define = '@implementation'
 end = '@end'
@@ -23,6 +23,9 @@ def parseImplementation(contents):
     for line in contents:
         if line.startswith(define):
             name=parseImpName(line)
+            cat = filterCategory(line)
+            if len(cat)>0:
+                name += "({})".format(cat)
             has = True
         elif has and line.startswith(end):
             im = baseClass.Implementation()
