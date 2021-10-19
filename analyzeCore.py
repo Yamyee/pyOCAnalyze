@@ -21,6 +21,9 @@ def runPaths(path):
 
 def readFile(path):
     contents = []
+    if not os.path.exists(path):
+        print(path+" not found")
+        return
     print('analyzing... ' + path)
     with open(path, 'r+') as f:
         for line in f.readlines():

@@ -1,3 +1,4 @@
+import types
 import baseClass
 import parse
 import re
@@ -7,20 +8,71 @@ end = '@end'
 prop = '@property'
 
 
+def filterPropertyTypeName(line):
+    type = ''
+    name = ''
+    i = 0
+    buf = ''
+    arr = []
+    while i < len(line):
+
+        if line[i] == ')' and "^" in buf and ")" in buf:
+            buf += line[i]
+            type = buf
+            name = parse.filterContent(type,"^",")")
+            break
+        elif line[i] == '*' and '^' not in buf:
+            type += line[i]
+            buf = ''
+        elif line[i] == ' ' and len(buf) > 0 and len(type) == 0 and '^' not in buf:
+            type = buf
+            buf = ''
+        elif len(type) > 0 and line[i] == ';':
+            name = buf
+            break
+        elif not line[i] == ' ':
+            buf += line[i]
+        i += 1
+    return type,name
+
+allModifier = ['strong','weak','assing','class','unsafe_unretained','retain','copy','nonatomic','readwrite','readonly','writeonly','null_resettable']
+
+def filterModifiers(line):
+    i = 0
+    res = []
+    arr = []
+    buf = ''
+    while i < len(line):
+        if line[i] == "(":
+            buf = ''
+            arr.append(line[i])
+
+        elif line[i] == ")" and arr[-1] == "(":
+            del arr[-1]
+            if len(arr) == 0:
+                if buf in allModifier:
+                    res.append(buf)
+                break
+        elif len(arr) > 0 :
+            if line[i] == ',' or line[i] == ' ':
+                if buf in allModifier:
+                    res.append(buf)
+                buf = ''
+            else:
+                buf += line[i]
+        i += 1
+    return res,i
+
 def filterProperty(line):
     if not line.strip(" ").startswith(prop):
         return None
     pro = baseClass.Property()
-    pro.modifiers = parse.filterArr(line, "(", ")", ",")
-    sep = " "
-    if "*" in line:
-        sep = "*"
-    arr = parse.filterArr(line, ")", ";", sep)
-    if len(arr) > 1:
-        pro.type = arr[0]
-        pro.name = arr[1]
-    if 'class' in pro.modifiers:
-        pro.isStatic = True
+    modifiers,i = filterModifiers(line)
+    pro.modifiers = modifiers
+    l = line[i+1:]
+    type,name = filterPropertyTypeName(l)
+    pro.type = type
+    pro.name = name
     return pro
 
 
@@ -31,32 +83,71 @@ def filterParam(line):
     buf = ''
     i = 0
     name = ''
+    arr = []
     while i < len(line):
-        if line[i] == "(":
+        if line[i] == ":":
+            #一段方法名
+            buf += line[i]
             name += buf.strip(" ")
             buf = ''
-        elif line[i] == ")":
-            p.type = buf.replace("*", "").strip(" ")
-            buf = ''
+            i += 1
+            continue
+
+        if not line[i] == ' ':
+            buf += line[i]
+        
+        if line[i] == "(": 
+            arr.append(line[i])#入栈
+        elif line[i] == ")" and arr[-1] == "(":
+            del arr[-1] #出栈
+            if len(arr) == 0:
+                p.type = buf[1:][:-1] #参数类型
+                buf = ''
         elif line[i] == " " and len(p.type) > 0:
-            p.name = buf.strip(" ")
+            p.name = buf #参数名
             ps.append(p)
             p = baseClass.Param()
             buf = ''
-        else:
-            buf += line[i]
 
         i += 1
     return ps, name
 
-seps = [" ","\n","\t","__attribute__"]
-def filterPureName(line,l,r):
-    name = parse.filterContent(line, l, r)
-    for s in seps:
-        if s in name:
-            name = name.split(s)[0]
+seps = [" ","{","\n","\t"]
+def filterPureName(line):
+    i = 0
+    name = ''
+    while i < len(line):
+        if line[i] not in seps:
+            name += line[i]
+        else:
             break
+        i += 1
     return name
+
+def filterReturnType(line):
+    if len(line)==0:
+        return 0,''
+    arr = []
+    do = True
+    buf = ''
+    i = 0
+    while do and i < len(line):
+        if line[i] == '+' or line[i] == '-':
+            i += 1
+            continue
+        if line[i] == ' ' and len(arr) == 0:
+            i += 1
+            continue
+        if line[i] == '(':
+            arr.append(line[i])
+        elif line[i] == ')' and arr[-1] == '(':
+            del arr[-1]
+        if not line[i] == ' ':
+            buf += line[i]
+        if i > 0 and len(arr) == 0:
+            do = False
+        i += 1
+    return i,buf
 
 #解析方法声明
 def filterMethodDecl(line, end=';'):
@@ -64,18 +155,16 @@ def filterMethodDecl(line, end=';'):
         return None
     method = baseClass.Method()
     method.isStatic = True if line.strip(' ').startswith('+') else False
-    lis = re.findall('(?<=\\()(.+?)(?=\\))', line, 0)
-    if len(lis) == 0:
-        return None
-    method.returnType = lis[0]
-    if ":" not in line:
-        method.name = filterPureName(line,")",end)
-        return method
-    sp = method.returnType + ")"
-    l = line.split(sp)[1]
-    params, name = filterParam(l)
-    method.params = params
-    method.name = name
+    i,returnType = filterReturnType(line)
+    returnType = returnType[1:][:-1]
+    method.returnType = returnType
+    l = line[i:]
+    if ':' in l:
+        params, name = filterParam(l)
+        method.params = params
+        method.name = name
+    else:
+        method.name = filterPureName(l)
     return method
 
 

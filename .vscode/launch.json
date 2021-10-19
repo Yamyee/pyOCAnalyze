@@ -12,8 +12,7 @@
             "program": "checkDiffProtocol.py",
             "console": "integratedTerminal",
             "args": [
-                "/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yybaseservice/yybaseservice/Libs/SVGA/pbobjc/Svga.pbobjc.m",
-                // "/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yybaseapisdk,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yybaseservice,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yychannelmodules,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yydocumentcomponent-ios,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yyfeedbackcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yygiftviewcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yyiapcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yymediatorsdk,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yyreportcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/yywebcomponent,/Users/yamyee/Documents/YYCode/haokan-ios/Pods/BDGameTplComponent",
+                "/Users/yamyee/Desktop/YYWhisperModule.m",
                 "/Users/yamyee/Downloads/diff.txt"
             ]
         }

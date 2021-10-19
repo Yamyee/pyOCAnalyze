@@ -73,8 +73,11 @@ def collectMethods(path):
             mth = "{}[{} {}]".format(sym,cla.name,method.name)
             print(mth)
             content += mth + "\n"
+        for property in cla.propertys:
+            prop = "{}.{}".format(cla.name,property.name)
+            print(prop)
+            content += prop + "\n"
         content += "================\n"
-
     if len(content) == 0:
         return
     with open(path,'w+') as f:

@@ -18,6 +18,9 @@ class Param(Decl):
         self.name = ''
         self.type = ''
 
+    def isBlock(self):
+        return "^" in self.type
+
     def desc(self):
         return "type = {},name = {}".format(self.type, self.name)
 
@@ -73,6 +76,12 @@ class Implementation(Decl):
             methodDesc += "\n"
         return "name = {}\nmethods = \n{}".format(self.name, methodDesc)
 
+class Block(Decl):
+    def __init__(self):
+        super(Block, self).__init_()
+        self.name = ''
+        self.returnType = ''
+        self.params = []
 
 class Property(Decl):
     def __init__(self):
@@ -83,6 +92,9 @@ class Property(Decl):
         self.isStatic = False
         self.required = True
 
+    def isBlock(self):
+        return "^" in self.type
+        
     def desc(self):
         return "type = {}\nname = {}\nmodifiers = {}\nisStatic = {}".format(
             self.type, self.name, str(self.modifiers), self.isStatic)
