@@ -43,7 +43,8 @@ def parseImplementation(contents):
             methods = []
             has = False
         elif has:
-            if line.startswith('+') or line.startswith('-'):
+            tem = line.replace(" ",'')
+            if tem.startswith('+(') or tem.startswith('-('):
                 append = line
             elif (append.startswith('-') or append.startswith('+')) and len(line) > 0 :
                 append += " "+line

@@ -6,7 +6,7 @@ import re
 define = '@interface'
 end = '@end'
 prop = '@property'
-methodEnds = ["{",";","//"]
+methodEnds = ["{",";","__attribute__","//"]
 
 def filterPropertyTypeName(line):
     type = ''
@@ -116,10 +116,17 @@ def filterPureName(line):
     i = 0
     name = ''
     while i < len(line):
-        if line[i] not in seps:
+        if line[i] == ' ':
+            if name == '':
+                i += 1
+                continue
+            else:
+                break
+        elif line[i] not in seps:
             name += line[i]
         else:
             break
+
         i += 1
     return name
 
@@ -164,6 +171,8 @@ def filterMethodDecl(line):
         method.name = name
     else:
         method.name = filterPureName(l)
+    if len(method.name) == 0:
+        return None
     return method
 
 
