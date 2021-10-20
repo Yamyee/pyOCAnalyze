@@ -35,7 +35,7 @@ def protocolMethodInClass(protocol,cls):
         if met in allClsMethods:
             continue
         sym = "+" if met.isStatic else "-"
-        lm = "{} : {}[{} {}]".format(protocol.name,sym,cla.name,met.name)
+        lm = "{} : {}[{} {}]".format(protocol.name,sym,cls.name,met.name)
         lostMethods.append(lm)
 
 def diffCheck():
