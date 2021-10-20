@@ -1,19 +1,27 @@
 import baseClass
 import parse
-from analyzeInterface import filterMethodDecl,filterCategory
+from analyzeInterface import filterMethodDecl,filterCategory,methodEnds
 
 define = '@implementation'
 end = '@end'
 static = '@static'
 synthesize = '@synthesize'
 
-methodEnds = [";","{","//"]
+
 
 def parseImpName(line):
     if "(" in line:
         return parse.filterContent(line, define, "(")
     return line.replace(define, "").replace(" ", "")
 
+def parseMethodEnd(line):
+    has = False
+    sub = line
+    for end in methodEnds:
+        if end in sub:
+            has = True
+            sub = line.split(end)[0]
+    return has,sub
 
 def parseImplementation(contents):
     has = False
@@ -38,11 +46,11 @@ def parseImplementation(contents):
             if line.startswith('+') or line.startswith('-'):
                 append = line
             elif (append.startswith('-') or append.startswith('+')) and len(line) > 0 :
-                if line[0] in methodEnds:
-                    met = filterMethodDecl(append.strip(" "), "{")
+                append += " "+line
+                isEnd,subLine = parseMethodEnd(append)
+                if isEnd:
+                    met = filterMethodDecl(subLine.strip(" "))
                     if not met is None:
                         methods.append(met)
                     append = ''             
-                else:
-                    append += line
     return imps

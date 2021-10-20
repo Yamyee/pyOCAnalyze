@@ -1,5 +1,5 @@
 
-dir=${HOME}/Documents/YYCode/haokan-ios/Pods/
+dir=${union}/Pods/
 components=(
     yybaseapisdk
     yybaseservice
@@ -26,4 +26,5 @@ paths=$paths${HOME}/Documents/YYCode/yychannelbase-ios/yychannelbase,
 paths=$paths${HOME}/Documents/YYCode/yychannelcomponent-ios/yychannelcomponent,
 paths=$paths${HOME}/Documents/YYCode/yymediatorInterface-ios/yyunionkit/Classes
 echo $paths
+chmod -R 777 $union/Pods/
 python3 checkDiffProtocol.py $paths $out

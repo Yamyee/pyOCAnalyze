@@ -6,7 +6,7 @@ import re
 define = '@interface'
 end = '@end'
 prop = '@property'
-
+methodEnds = ["{",";","//"]
 
 def filterPropertyTypeName(line):
     type = ''
@@ -15,7 +15,6 @@ def filterPropertyTypeName(line):
     buf = ''
     arr = []
     while i < len(line):
-
         if line[i] == ')' and "^" in buf and ")" in buf:
             buf += line[i]
             type = buf
@@ -28,7 +27,7 @@ def filterPropertyTypeName(line):
         elif line[i] == ' ' and len(buf) > 0 and len(type) == 0 and '^' not in buf:
             type = buf
             buf = ''
-        elif len(type) > 0 and line[i] == ';':
+        elif len(type) > 0 and line[i] in methodEnds:
             name = buf
             break
         elif not line[i] == ' ':
@@ -150,7 +149,7 @@ def filterReturnType(line):
     return i,buf
 
 #解析方法声明
-def filterMethodDecl(line, end=';'):
+def filterMethodDecl(line):
     if not line.startswith('+') and not line.startswith('-'):
         return None
     method = baseClass.Method()
