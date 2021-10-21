@@ -1,4 +1,4 @@
-import os, sys, time
+import os, sys, re
 import baseClass
 from analyzeInterface import parseInterface
 from analyzeProtocol import parseProtocol
@@ -18,7 +18,9 @@ def runPaths(path):
             #递归
             runPaths(os.path.join(parent, dirName))
 
-
+filter='\/\*([\w\W]*?)\*\/'#匹配/**/包含的内容
+filter1='\/\/(.*)'#匹配//后面的内容
+filter2=['','\n','\t',' ']
 def readFile(path):
     contents = []
     if not os.path.exists(path):
@@ -26,14 +28,27 @@ def readFile(path):
         return
     print('analyzing... ' + path)
     with open(path, 'r+') as f:
-        for line in f.readlines():
-            if line.startswith("#") or line.startswith("//"):
+        all = ''.join(f.readlines())
+        arr = re.findall(filter,all)
+        if len(arr) > 0:
+            for a in arr:
+                all = all.replace('/*{}*/'.format(a),' ')
+        # 这里还要去掉/**/包裹的注释
+
+        allLines = all.split('\n')
+        for line in allLines:
+            sub = line
+            marr = re.findall(filter1,line)
+            if len(marr) > 0:
+                for a in marr:
+                    sub = line.replace('//{}'.format(a),' ')
+            if sub.startswith("#") or sub.startswith("//"):
                 continue
-            if line == '\n' or line == ' ' or line == '\t':
-                continue
-            l = line.lstrip('\t').lstrip(' ').rstrip('\t').rstrip('\n').rstrip(
+            sub = sub.lstrip('\t').lstrip(' ').rstrip('\t').rstrip('\n').rstrip(
                 ' ')
-            contents.append(l)
+            if sub in filter2:
+                continue
+            contents.append(sub)
 
     if len(contents) == 0:
         print('文件为空：{}'.format(path))

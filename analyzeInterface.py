@@ -5,7 +5,7 @@ import re
 define = '@interface'
 end = '@end'
 prop = '@property'
-methodEnds = ["{",";","__attribute__","//"]
+methodEnds = ["{",";","__attribute__","//","/*"]
 
 def filterPropertyTypeName(line):
     type = ''
@@ -104,7 +104,7 @@ def filterParam(line):
             if len(arr) == 0:
                 p.type = buf[1:][:-1] #参数类型
                 buf = ''
-        elif line[i] == " " and len(p.type) > 0:
+        elif line[i] == " " and len(buf) > 0 and len(p.type) > 0:
             p.name = buf #参数名
             ps.append(p)
             p = baseClass.Param()
