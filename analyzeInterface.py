@@ -1,4 +1,3 @@
-import types
 import baseClass
 import parse
 import re
@@ -83,7 +82,10 @@ def filterParam(line):
     i = 0
     name = ''
     arr = []
+    special="~!@#$%^&*_+-*/,.[]\/"
     while i < len(line):
+        if line[i] in special:
+            return None,''
         if line[i] == ":":
             #一段方法名
             buf += line[i]
@@ -112,10 +114,14 @@ def filterParam(line):
     return ps, name
 
 seps = [" ","{","\n","\t"]
+characters='~!@#$%^&*()_+-*/<>,.[]\/'
 def filterPureName(line):
     i = 0
     name = ''
     while i < len(line):
+        if line[i] in characters:
+            name = ''
+            break
         if line[i] == ' ':
             if name == '':
                 i += 1
@@ -167,6 +173,8 @@ def filterMethodDecl(line):
     l = line[i:]
     if ':' in l:
         params, name = filterParam(l)
+        if params == None or name == '':
+            return None
         method.params = params
         method.name = name
     else:
